@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>رهف ونجمة الفستق - هدية من حسن</title>
     
-    <!-- GSAP Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
@@ -104,6 +103,7 @@
             height: 100%;
             object-fit: cover;
             border-radius: 25px;
+            opacity: 1;
         }
 
         .scene-indicator {
@@ -188,41 +188,17 @@
             background: rgba(255, 211, 105, 0.4);
         }
 
-        .hidden {
-            display: none;
-        }
-
         .kiss-option {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             margin-top: 10px;
         }
 
-        .response-message {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 25px;
-            margin-top: 20px;
-        }
-
         @media (max-width: 550px) {
-            .story-container {
-                padding: 15px;
-            }
-            .illustration {
-                height: 180px;
-            }
-            #story-title {
-                font-size: 1.4rem;
-            }
-            #story-text {
-                font-size: 0.9rem;
-                padding: 15px;
-            }
-            button {
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
+            .story-container { padding: 15px; }
+            .illustration { height: 180px; }
+            #story-title { font-size: 1.4rem; }
+            #story-text { font-size: 0.9rem; padding: 15px; }
+            button { padding: 12px 15px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -233,7 +209,7 @@
 
 <div class="story-container" id="storyContainer">
     <div class="illustration" id="illustration">
-        <img id="sceneImage" src="" alt="مشهد" onerror="this.src='https://picsum.photos/600/250?random=1'">
+        <img id="sceneImage" src="" alt="مشهد">
     </div>
     
     <div class="scene-indicator">
@@ -249,9 +225,7 @@
 </div>
 
 <script>
-    // ============================================
-    // الروابط (تم إدخال الروابط التي أرسلتها)
-    // ============================================
+    // روابط الصور (تأكد من تحديثها لروابط .webp الجديدة لضمان السرعة)
     const IMAGES = {
         bg_rooftop: "https://f.top4top.io/p_3763t05ja1.jpg",
         bg_space: "https://h.top4top.io/p_3763ewdav1.jpg",
@@ -261,25 +235,10 @@
         scene_happy: "https://d.top4top.io/p_37636pmgr1.jpg"
     };
     
-    // الشخصيات (احتياطي - قد لا نستخدمها مباشرة)
-    const CHARACTERS = {
-        raghad: "https://f.top4top.io/p_3763cqmlc1.png",
-        hassan: "https://i.top4top.io/p_3763u2b5z1.png",
-        fustuq: "https://c.top4top.io/p_3763hqw5a1.png",
-        alien_lawzi: "https://f.top4top.io/p_376385yqn1.png",
-        alien_sukkar: "https://h.top4top.io/p_3763nn65e1.png"
-    };
-    
-    // ============================================
-    // إعدادات البوت والتوكن للإشعار
-    // ============================================
     const BOT_TOKEN = "8691676549:AAFQZLMLSn3rNKzbYd0dFuuujByQjVyX-Kg";
     const CHAT_ID = "2130343248";
     
-    // ============================================
-    // تأثيرات الخلفية
-    // ============================================
-    
+    // إعدادات النجوم
     function createStars() {
         const starsContainer = document.getElementById('stars');
         for (let i = 0; i < 150; i++) {
@@ -310,15 +269,8 @@
     createStars();
     createStarBubbles();
     
-    // إظهار الحاوية مع تأثير
-    setTimeout(() => {
-        document.getElementById('storyContainer').classList.add('show');
-    }, 100);
-    
-    // ============================================
-    // بيانات القصة (بدون ذكر العمر)
-    // ============================================
-    
+    setTimeout(() => document.getElementById('storyContainer').classList.add('show'), 100);
+
     const scenes = {
         start: {
             name: '🌙 المشهد الأول: ليلة تحت النجوم',
@@ -381,56 +333,34 @@
             choices: []
         }
     };
-    
-    // ============================================
-    // دوال إرسال رسالة تيليجرام
-    // ============================================
-    
+
     async function sendTelegramMessage(message) {
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-        const data = {
-            chat_id: CHAT_ID,
-            text: message,
-            parse_mode: 'HTML'
-        };
-        
+        const data = { chat_id: CHAT_ID, text: message, parse_mode: 'HTML' };
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            console.log('Telegram message sent:', result);
-            return result.ok;
-        } catch (error) {
-            console.error('Error sending telegram message:', error);
-            return false;
-        }
+            await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        } catch (e) { console.error(e); }
     }
-    
-    // ============================================
-    // عرض المشاهد مع تأثيرات GSAP
-    // ============================================
-    
-    function showScene(sceneId, fromKiss = false) {
+
+    // تحديث وظيفة عرض المشاهد لضمان المزامنة
+    function showScene(sceneId) {
         const scene = scenes[sceneId];
         if (!scene) return;
         
-        // تأثير اختفاء ثم ظهور
-        gsap.to("#story-text", {
+        const sceneImg = document.getElementById('sceneImage');
+        
+        // تأثير مزامنة الصورة مع النص
+        gsap.to([sceneImg, "#story-text"], {
             duration: 0.3,
             opacity: 0,
             y: 10,
             onComplete: () => {
+                sceneImg.src = scene.image;
                 document.getElementById('scene-badge').textContent = scene.name;
                 document.getElementById('story-title').innerHTML = scene.name.split(':')[1] || scene.name;
                 document.getElementById('story-text').innerHTML = scene.text;
-                document.getElementById('sceneImage').src = scene.image;
                 
-                gsap.to("#story-text", {
+                gsap.to([sceneImg, "#story-text"], {
                     duration: 0.5,
                     opacity: 1,
                     y: 0,
@@ -450,7 +380,6 @@
                 choicesDiv.appendChild(btn);
             });
         } else {
-            // نهاية القصة - نضيف زر "قراءة المزيد"
             const readMoreDiv = document.createElement('div');
             readMoreDiv.className = 'read-more';
             readMoreDiv.innerHTML = '📖 قراءة المزيد...';
@@ -458,108 +387,52 @@
             choicesDiv.appendChild(readMoreDiv);
         }
         
-        // تأثير GSAP على الأزرار الجديدة
-        gsap.fromTo(".choices button, .read-more", 
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 }
-        );
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
-    // ============================================
-    // الخيارات النهائية بعد "قراءة المزيد"
-    // ============================================
-    
+
     function showFinalOptions() {
         const choicesDiv = document.getElementById('choices');
-        
-        gsap.to("#choices", {
-            duration: 0.3,
-            opacity: 0,
-            onComplete: () => {
-                choicesDiv.innerHTML = '';
-                
-                const kissBtn = document.createElement('button');
-                kissBtn.className = 'kiss-option';
-                kissBtn.innerHTML = '🌸 شنو رائيج نبوس حسن؟ 🌸';
-                kissBtn.onclick = () => showKissResponse(true);
-                choicesDiv.appendChild(kissBtn);
-                
-                const noBtn = document.createElement('button');
-                noBtn.innerHTML = '💋 هاي احلى بوسه من رفرف لحسن 💋';
-                noBtn.onclick = () => showKissResponse(false);
-                choicesDiv.appendChild(noBtn);
-                
-                gsap.to("#choices", { duration: 0.3, opacity: 1 });
-            }
-        });
+        gsap.to("#choices", { duration: 0.3, opacity: 0, onComplete: () => {
+            choicesDiv.innerHTML = '';
+            const kissBtn = document.createElement('button');
+            kissBtn.className = 'kiss-option';
+            kissBtn.innerHTML = '🌸 شنو رائيج نبوس حسن؟ 🌸';
+            kissBtn.onclick = () => showKissResponse(true);
+            choicesDiv.appendChild(kissBtn);
+            
+            const noBtn = document.createElement('button');
+            noBtn.innerHTML = '💋 هاي احلى بوسه من رفرف لحسن 💋';
+            noBtn.onclick = () => showKissResponse(false);
+            choicesDiv.appendChild(noBtn);
+            gsap.to("#choices", { duration: 0.3, opacity: 1 });
+        }});
     }
-    
-    // ============================================
-    // الرد على خيار البوسه
-    // ============================================
-    
+
     async function showKissResponse(answer) {
-        const choicesDiv = document.getElementById('choices');
         const storyText = document.getElementById('story-text');
-        
-        if (answer === true) {
-            // إرسال إشعار إلى تيليجرام
-            const message = `💋 تنبيه من موقع هدية رهف 💋\n\nرهف اختارت خيار "هاي احلى بوسه من رفرف لحسن 💋" لسؤال: شنو رائيج نبوس حسن؟\n\n✨ تاريخ ووقت الحدث: ${new Date().toLocaleString('ar-IQ')}\n\n❤️ هذا إشعار تلقائي من الموقع.`;
-            
-            await sendTelegramMessage(message);
-            
-            gsap.to("#choices", { duration: 0.3, opacity: 0 });
-            gsap.to("#story-text", { duration: 0.3, opacity: 0, y: 10, onComplete: () => {
-                storyText.innerHTML = '🌸🌸🌸<br><br>رهف: "حسن... أنا معجبة بشخصيتك الطيبة وشجاعتك، دعنا نبقى أصدقاء جيدين ونتذكر مغامرتنا الجميلة في الفضاء. شكراً لك على الهدية الرائعة!"<br><br>🌸🌸🌸';
-                choicesDiv.innerHTML = '';
-                
-                const restartBtn = document.createElement('button');
-                restartBtn.innerHTML = '🔄 أعيدي قراءة القصة من البداية';
-                restartBtn.onclick = () => showScene('start');
-                choicesDiv.appendChild(restartBtn);
-                
-                gsap.to("#story-text", { duration: 0.5, opacity: 1, y: 0 });
-                gsap.to("#choices", { duration: 0.3, opacity: 1 });
-            }});
-        } else {
-            gsap.to("#choices", { duration: 0.3, opacity: 0 });
-            gsap.to("#story-text", { duration: 0.3, opacity: 0, y: 10, onComplete: () => {
-                storyText.innerHTML = '🌸 رهف: "حسن، أنت صديق رائع وأقدر صداقتنا كثيراً. دعنا نبقى أصدقاء ونستمتع بذكرياتنا الجميلة معاً. شكراً لك على هذه الهدية الرائعة!" 🌸';
-                choicesDiv.innerHTML = '';
-                
-                const restartBtn = document.createElement('button');
-                restartBtn.innerHTML = '🔄 أعيدي قراءة القصة من البداية';
-                restartBtn.onclick = () => showScene('start');
-                choicesDiv.appendChild(restartBtn);
-                
-                gsap.to("#story-text", { duration: 0.5, opacity: 1, y: 0 });
-                gsap.to("#choices", { duration: 0.3, opacity: 1 });
-            }});
+        if (answer) {
+            await sendTelegramMessage(`💋 تنبيه من موقع هدية رهف 💋\n\nرهف اختارت خيار "نبوس حسن" \n\n✨ التاريخ: ${new Date().toLocaleString('ar-IQ')}`);
         }
         
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        gsap.to(["#choices", "#story-text"], { duration: 0.3, opacity: 0, onComplete: () => {
+            storyText.innerHTML = '🌸 رهف: "حسن، أنت صديق رائع وأقدر صداقتنا كثيراً. دعنا نبقى أصدقاء ونستمتع بذكرياتنا الجميلة معاً. شكراً لك على هذه الهدية الرائعة!" 🌸';
+            document.getElementById('choices').innerHTML = '<button onclick="location.reload()">🔄 أعيدي قراءة القصة</button>';
+            gsap.to(["#choices", "#story-text"], { duration: 0.5, opacity: 1 });
+        }});
     }
-    
+
     // بدء القصة
     showScene('start');
-// مصفوفة تحتوي على جميع روابط الصور التي تريد تحميلها مسبقاً
-const allImages = [
-    ...Object.values(IMAGES),
-    ...Object.values(CHARACTERS)
-];
 
-function preloadImages(urls) {
-    urls.forEach(url => {
-        const img = new Image();
-        img.src = url;
-    });
-    console.log("بدأ تحميل الصور في الخلفية...");
-}
-
-// استدعاء الوظيفة فور تشغيل الصفحة
-preloadImages(allImages);
+    // التحميل المسبق لجميع الصور لضمان السرعة
+    const allImages = [...Object.values(IMAGES)];
+    function preloadImages(urls) {
+        urls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
+    preloadImages(allImages);
 </script>
 </body>
 </html>
